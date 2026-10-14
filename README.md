@@ -10,7 +10,7 @@
 Official implementation and simulation suite for the research paper:  
 **"Fractional-order crime dynamics: Linear vs. nonlinear transmission models using physics-informed neural networks"**  
 *Chaos, Solitons & Fractals*, Volume 209, 2026, Article 118408.  
-[https://doi.org/10.1016/j.chaos.2026.118408](https://doi.org/10.1016/j.chaos.2026.118408)
+[Check it out!!](https://doi.org/10.1016/j.chaos.2026.118408)
 
 ---
 
@@ -22,7 +22,7 @@ Official implementation and simulation suite for the research paper:
   - [Caputo Fractional Framework](#caputo-fractional-framework)
   - [The Four Transmission Models](#the-four-transmission-models)
 - [Dynamical Systems & Stability Analysis](#dynamical-systems--stability-analysis)
-  - [Basic Reproduction Number ($\mathcal{R}_0$)](#basic-reproduction-number-mathcalr_0)
+  - [Basic Reproduction Number ($R_0$)](#basic-reproduction-number-r_0)
   - [Equilibria & Stability](#equilibria--stability)
   - [Bifurcation & Sensitivity Analysis](#bifurcation--sensitivity-analysis)
 - [Physics-Informed Neural Networks (PINNs)](#physics-informed-neural-networks-pinns)
@@ -87,7 +87,7 @@ This repository implements a **fractional-order mathematical modeling framework*
 - **Fractional Memory Integration**: Formulates crime spread using the Caputo fractional operator of order $\eta \approx 0.83$, demonstrating that past criminal interactions significantly moderate current and future crime progression.
 - **Systematic Transmission Comparison**: Evaluates bilinear contact against non-criminal saturation (preventive precautions), criminal saturation (crowding/police focus), and dual saturation.
 - **Physics-Informed Parameter Identification**: Solves the inverse problem by simultaneously minimizing empirical data misfit, differential equation residuals, and initial condition losses using PyTorch autograd and Grünwald–Letnikov expansions.
-- **Rigorous Mathematical Foundations**: Provides closed-form derivations of Crime-Free and Endemic equilibria, threshold reproduction numbers ($\mathcal{R}_0$), Matignon-based fractional stability criteria, center manifold transcritical bifurcations, and normalized parameter sensitivity indices.
+- **Rigorous Mathematical Foundations**: Provides closed-form derivations of Crime-Free and Endemic equilibria, threshold reproduction numbers ($R_0$), Matignon-based fractional stability criteria, center manifold transcritical bifurcations, and normalized parameter sensitivity indices.
 - **Dual Verification**: Validates deep learning predictions against independent numerical simulations using a Fractional Runge–Kutta 2nd Order (RK-2) algorithm in MATLAB.
 
 ---
@@ -98,14 +98,14 @@ This repository implements a **fractional-order mathematical modeling framework*
 
 Let $S(t)$, $C(t)$, and $P(t)$ represent the normalized proportions of the population who are non-criminals, active criminals, and incarcerated/rehabilitated individuals, respectively. The system dynamics are governed by the Caputo fractional derivative of order $\eta \in (0, 1]$:
 
-$${}^C \mathcal{D}_t^\eta x(t) = \frac{1}{\Gamma(1 - \eta)} \int_0^t (t - \tau)^{-\eta} x'(\tau) \, d\tau$$
+$${}^C D_t^\eta x(t) = \frac{1}{\Gamma(1 - \eta)} \int_0^t (t - \tau)^{-\eta} x'(\tau) \, d\tau$$
 
 To maintain dimensional consistency across fractional time, time-scaling factor $\lambda^{\eta-1}$ is incorporated:
 
 $$\begin{aligned}
-\lambda^{\eta-1} \, {}^C \mathcal{D}_t^\eta S(t) &= A^\eta - f(S, C) + \delta_1^\eta P(t) - \delta_0^\eta S(t) \\
-\lambda^{\eta-1} \, {}^C \mathcal{D}_t^\eta C(t) &= f(S, C) - l^\eta C(t) - \delta_0^\eta C(t) \\
-\lambda^{\eta-1} \, {}^C \mathcal{D}_t^\eta P(t) &= l^\eta C(t) - (\delta_0^\eta + \delta_1^\eta) P(t)
+\lambda^{\eta-1} \, {}^C D_t^\eta S(t) &= A^\eta - f(S, C) + \delta_1^\eta P(t) - \delta_0^\eta S(t) \\
+\lambda^{\eta-1} \, {}^C D_t^\eta C(t) &= f(S, C) - l^\eta C(t) - \delta_0^\eta C(t) \\
+\lambda^{\eta-1} \, {}^C D_t^\eta P(t) &= l^\eta C(t) - (\delta_0^\eta + \delta_1^\eta) P(t)
 \end{aligned}$$
 
 | Parameter | Sociological & Epidemiological Interpretation | Code Variable |
@@ -160,33 +160,86 @@ $$f(S, C) = \frac{\alpha^\eta S(t) C(t)}{1 + \beta S(t) + \gamma C(t)}$$
 
 ## Dynamical Systems & Stability Analysis
 
-### Basic Reproduction Number ($\mathcal{R}_0$)
+### Basic Reproduction Number ($R_0$)
 
-The basic reproduction number $\mathcal{R}_0$ dictates whether criminal behavior extinguishes or persists endemically:
+The basic reproduction number $R_0$ dictates whether criminal behavior extinguishes or persists endemically.
 
-- **Models 1 & 3**:
-  $$\mathcal{R}_0 = \frac{\alpha^\eta S_0}{l^\eta + \delta_0^\eta} = \frac{\alpha^\eta A^\eta}{\delta_0^\eta (l^\eta + \delta_0^\eta)}$$
-- **Models 2 & 4**:
-  $$\mathcal{R}_0 = \frac{\alpha^\eta S_0}{(1 + \beta S_0)(l^\eta + \delta_0^\eta)} = \frac{\alpha^\eta A^\eta}{(\delta_0^\eta + \beta A^\eta)(l^\eta + \delta_0^\eta)}$$
+For **Models 1 and 3** (linear and criminal-saturated transmission):
+
+$$R_0 = \frac{\alpha^\eta S_0}{l^\eta + \delta_0^\eta} = \frac{\alpha^\eta A^\eta}{\delta_0^\eta (l^\eta + \delta_0^\eta)}$$
+
+For **Models 2 and 4** (non-criminal saturated and combined saturation):
+
+$$R_0 = \frac{\alpha^\eta S_0}{(1 + \beta S_0)(l^\eta + \delta_0^\eta)} = \frac{\alpha^\eta A^\eta}{(\delta_0^\eta + \beta A^\eta)(l^\eta + \delta_0^\eta)}$$
 
 ### Equilibria & Stability
 
-1. **Crime-Free Equilibrium (CFE)**:
-   $$E_0 = \left(S_0, 0, 0\right) = \left(\frac{A^\eta}{\delta_0^\eta}, 0, 0\right)$$
-   By **Matignon’s Stability Criterion** for fractional systems, $E_0$ is locally asymptotically stable if:
-   $$|\arg(\lambda_i)| > \frac{\eta \pi}{2} \quad \Longleftrightarrow \quad \mathcal{R}_0 < 1$$
-   If $\mathcal{R}_0 > 1$, $E_0$ becomes unstable and crime persists.
+#### 1. Crime-Free Equilibrium (CFE)
 
-2. **Endemic Equilibrium (EE)**:
-   $$E^* = (S^*, C^*, P^*), \quad C^* > 0$$
-   Exists uniquely in the positive invariant region whenever $\mathcal{R}_0 > 1$.
+At the crime-free state ($C = 0, P = 0$), the baseline equilibrium is:
+
+$$E_0 = (S_0, 0, 0) = \left(\frac{A^\eta}{\delta_0^\eta}, 0, 0\right)$$
+
+According to **Matignon's Stability Criterion** for fractional dynamical systems, $E_0$ is locally asymptotically stable if and only if every eigenvalue $\lambda_i$ of the Jacobian evaluated at $E_0$ satisfies:
+
+$$|\arg(\lambda_i)| > \frac{\eta \pi}{2} \quad \Longleftrightarrow \quad R_0 < 1$$
+
+When $R_0 > 1$, $E_0$ becomes unstable, and crime spreads endemically through the population.
+
+#### 2. Endemic Equilibrium (EE)
+
+When $R_0 > 1$, there exists a unique positive endemic equilibrium $E^\ast = (S^\ast, C^\ast, P^\ast)$ where $C^\ast > 0$. At steady state, setting fractional derivatives to zero yields:
+
+$$P^\ast = \left( \frac{l^\eta}{\delta_0^\eta + \delta_1^\eta} \right) C^\ast$$
+
+$$S^\ast = \frac{A^\eta}{\delta_0^\eta} - \Pi C^\ast, \quad \text{with constant } \Pi = \frac{l^\eta + \delta_0^\eta + \delta_1^\eta}{\delta_0^\eta + \delta_1^\eta}$$
+
+The endemic criminal population $C^\ast$ and susceptible population $S^\ast$ for each model are:
+
+**Model 1 (Linear Transmission)**:
+
+$$S^\ast = \frac{l^\eta + \delta_0^\eta}{\alpha^\eta}, \qquad C^\ast = \left( \frac{A^\eta}{\delta_0^\eta} - S^\ast \right) \frac{1}{\Pi}$$
+
+**Model 2 (Saturated in Non-Criminals)**:
+
+$$S^\ast = \frac{l^\eta + \delta_0^\eta}{\alpha^\eta - \beta(l^\eta + \delta_0^\eta)}, \qquad C^\ast = \left( \frac{A^\eta}{\delta_0^\eta} - S^\ast \right) \frac{1}{\Pi}$$
+
+**Model 3 (Saturated in Criminals)**:
+
+$$C^\ast = \frac{\frac{\alpha^\eta A^\eta}{\delta_0^\eta} - (l^\eta + \delta_0^\eta)}{\Pi \alpha^\eta + \gamma(l^\eta + \delta_0^\eta)}, \qquad S^\ast = \frac{A^\eta}{\delta_0^\eta} - \Pi C^\ast$$
+
+**Model 4 (Combined Saturation)**:
+
+$$C^\ast = \frac{K \frac{A^\eta}{\delta_0^\eta} - (l^\eta + \delta_0^\eta)}{K \Pi + \gamma (l^\eta + \delta_0^\eta)}, \qquad S^\ast = \frac{(l^\eta + \delta_0^\eta)(1 + \gamma C^\ast)}{K}$$
+
+where $K = \alpha^\eta - \beta(l^\eta + \delta_0^\eta) > 0$.
 
 ### Bifurcation & Sensitivity Analysis
 
-- **Transcritical Bifurcation**: The system undergoes a forward transcritical bifurcation at $\mathcal{R}_0 = 1$ (verified via Center Manifold Theory). An exchange of stability occurs: for $\mathcal{R}_0 < 1$, $E_0$ is stable; as $\mathcal{R}_0$ crosses 1, $E_0$ loses stability and $E^*$ becomes stable.
-- **Normalized Sensitivity Indices ($\Upsilon_p^{\mathcal{R}_0} = \frac{\partial \mathcal{R}_0}{\partial p} \frac{p}{\mathcal{R}_0}$)**:
-  - $\frac{\partial \mathcal{R}_0}{\partial A} > 0$ and $\frac{\partial \mathcal{R}_0}{\partial \alpha} > 0$ (Increasing inflow or transmission inflates crime reproduction).
-  - $\frac{\partial \mathcal{R}_0}{\partial \beta} < 0$, $\frac{\partial \mathcal{R}_0}{\partial l} < 0$, $\frac{\partial \mathcal{R}_0}{\partial \delta_0} < 0$ (Social resistance, proactive law enforcement, and natural turnover suppress crime propagation).
+#### Transcritical Bifurcation Analysis
+
+A qualitative change in dynamics occurs when the threshold parameter reaches unity ($R_0 = 1$).
+
+For the fully nonlinear system (Model 4), the bifurcation condition is:
+
+$$A^\eta \alpha^\eta = (l^\eta + \delta_0^\eta)(\delta_0^\eta + \beta A^\eta)$$
+
+- For $R_0 < 1$, the crime-free equilibrium $E_0$ is locally asymptotically stable, while $E^\ast$ is biologically non-feasible.
+- For $R_0 > 1$, the crime-free equilibrium $E_0$ loses stability, and the endemic equilibrium $E^\ast$ enters the positive invariant region and becomes stable.
+- At $R_0 = 1$, the two equilibria $E_0$ and $E^\ast$ coincide and exchange stability. Application of Center Manifold Theory proves that the system undergoes a forward **transcritical bifurcation**.
+
+#### Normalized Sensitivity Analysis of $R_0$
+
+The normalized forward sensitivity index of $R_0$ with respect to a parameter $p$ is defined as:
+
+$$S_p = \frac{\partial R_0}{\partial p} \left( \frac{p}{R_0} \right)$$
+
+Evaluating the partial derivatives indicates how changes in parameter values impact crime persistence:
+
+- $\frac{\partial R_0}{\partial A} > 0$ and $\frac{\partial R_0}{\partial \alpha} > 0$: **Positive elasticity**. Increasing population inflow ($A$) or criminal transmission rate ($\alpha$) accelerates crime spread.
+- $\frac{\partial R_0}{\partial \beta} < 0$: **Negative elasticity**. Public awareness, self-protective measures, and preventive saturation ($\beta$) directly reduce $R_0$.
+- $\frac{\partial R_0}{\partial l} < 0$: **Negative elasticity**. Law enforcement intervention and incarceration ($l$) actively drive $R_0$ below unity.
+- $\frac{\partial R_0}{\partial \delta_0} < 0$: **Negative elasticity**. Baseline natural turnover ($\delta_0$) reduces the pool of active offenders.
 
 ---
 
@@ -236,22 +289,48 @@ Unlike purely statistical time-series or standard black-box neural networks, PIN
 
 The fractional derivative in the autograd computation graph is evaluated via the Grünwald–Letnikov (GL) expansion:
 
-$${}^C \mathcal{D}_t^\eta u(t_n) \approx \frac{1}{h^\eta} \sum_{j=0}^n w_j^{(\eta)} u(t_{n-j}), \quad w_j^{(\eta)} = (-1)^j \binom{\eta}{j} = \frac{(-1)^j \Gamma(\eta + 1)}{\Gamma(j + 1)\Gamma(\eta - j + 1)}$$
+$${}^C D_t^\eta u(t_n) \approx \frac{1}{h^\eta} \sum_{j=0}^n w_j^{(\eta)} u(t_{n-j}), \quad w_j^{(\eta)} = (-1)^j \binom{\eta}{j} = \frac{(-1)^j \Gamma(\eta + 1)}{\Gamma(j + 1)\Gamma(\eta - j + 1)}$$
 
 Implemented using numerically stable log-gamma representations (`torch.lgamma`).
 
 ### Multi-Objective Loss Formulation
 
-$$\mathcal{L}_{\text{total}} = w_{\text{phys}} \mathcal{L}_{\text{phys}} + w_{\text{data}} \mathcal{L}_{\text{data}} + w_{\text{ic}} \mathcal{L}_{\text{ic}}$$
+The network is trained by minimizing a composite multi-objective loss function:
 
-Where:
-- **Physics Loss ($\mathcal{L}_{\text{phys}}$)**: Residual mean-squared error enforcing governing equations across all time steps:
-  $$\mathcal{L}_{\text{phys}} = \frac{1}{N-1} \sum_{n=1}^{N-1} \left[ \left(\lambda^{\eta-1} \mathcal{D}^\eta S - \text{RHS}_S\right)^2 + \left(\lambda^{\eta-1} \mathcal{D}^\eta C - \text{RHS}_C\right)^2 + \left(\lambda^{\eta-1} \mathcal{D}^\eta P - \text{RHS}_P\right)^2 \right]$$
-- **Data Loss ($\mathcal{L}_{\text{data}}$)**: Mean-squared error against normalized historical crime observations:
-  $$\mathcal{L}_{\text{data}} = \frac{1}{N} \sum_{n=0}^{N-1} \left(P_{\text{pred}}(t_n) - P_{\text{obs}}(t_n)\right)^2$$
-- **Initial Condition Loss ($\mathcal{L}_{\text{ic}}$)**:
-  $$\mathcal{L}_{\text{ic}} = (S(0) - S_0)^2 + (C(0) - C_0)^2 + (P(0) - P_0)^2$$
-- **Default Hyperparameter Weights**: $w_{\text{phys}} = 1.0$, $w_{\text{data}} = 40.0$, $w_{\text{ic}} = 200.0$.
+$$L_{\text{total}} = w_{\text{phys}} L_{\text{phys}} + w_{\text{data}} L_{\text{data}} + w_{\text{ic}} L_{\text{ic}}$$
+
+#### 1. Physics Residual Loss ($L_{\text{phys}}$)
+
+The physical residual errors for each compartment across time steps $t_n$ are defined as:
+
+$$r_S(t_n) = \lambda^{\eta-1} \, {}^C D_t^\eta S(t_n) - \Big( A^\eta - f\big(S(t_n), C(t_n)\big) + \delta_1^\eta P(t_n) - \delta_0^\eta S(t_n) \Big)$$
+
+$$r_C(t_n) = \lambda^{\eta-1} \, {}^C D_t^\eta C(t_n) - \Big( f\big(S(t_n), C(t_n)\big) - l^\eta C(t_n) - \delta_0^\eta C(t_n) \Big)$$
+
+$$r_P(t_n) = \lambda^{\eta-1} \, {}^C D_t^\eta P(t_n) - \Big( l^\eta C(t_n) - (\delta_0^\eta + \delta_1^\eta) P(t_n) \Big)$$
+
+The mean-squared physics loss enforces the governing fractional differential equations across all interior collocation points:
+
+$$L_{\text{phys}} = \frac{1}{N-1} \sum_{n=1}^{N-1} \Big( [r_S(t_n)]^2 + [r_C(t_n)]^2 + [r_P(t_n)]^2 \Big)$$
+
+#### 2. Data Fitting Loss ($L_{\text{data}}$)
+
+Mean-squared error comparing model predictions against normalized historical crime observations from NCRB:
+
+$$L_{\text{data}} = \frac{1}{N} \sum_{n=0}^{N-1} \left( P_{\text{pred}}(t_n) - P_{\text{obs}}(t_n) \right)^2$$
+
+#### 3. Initial Condition Loss ($L_{\text{ic}}$)
+
+Penalizes divergence from known initial proportions at $t = 0$:
+
+$$L_{\text{ic}} = (S(0) - S_0)^2 + (C(0) - C_0)^2 + (P(0) - P_0)^2$$
+
+#### 4. Loss Weighting Hyperparameters
+
+The loss weights balance the relative magnitude and gradients during optimization:
+- Physics weight: $w_{\text{phys}} = 1.0$
+- Data fitting weight: $w_{\text{data}} = 40.0$
+- Initial condition weight: $w_{\text{ic}} = 200.0$
 
 ---
 
