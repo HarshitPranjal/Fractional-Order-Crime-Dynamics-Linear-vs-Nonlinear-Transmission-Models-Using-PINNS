@@ -103,9 +103,9 @@ $${}^C D_t^\eta x(t) = \frac{1}{\Gamma(1 - \eta)} \int_0^t (t - \tau)^{-\eta} x'
 To maintain dimensional consistency across fractional time, time-scaling factor $\lambda^{\eta-1}$ is incorporated:
 
 $$\begin{aligned}
-\lambda^{\eta-1} \, {}^C D_t^\eta S(t) &= A^\eta - f(S, C) + \delta_1^\eta P(t) - \delta_0^\eta S(t) \\
-\lambda^{\eta-1} \, {}^C D_t^\eta C(t) &= f(S, C) - l^\eta C(t) - \delta_0^\eta C(t) \\
-\lambda^{\eta-1} \, {}^C D_t^\eta P(t) &= l^\eta C(t) - (\delta_0^\eta + \delta_1^\eta) P(t)
+\lambda^{\eta-1} \. {}^C D_t^\eta S(t) &= A^\eta - f(S, C) + \delta_1^\eta P(t) - \delta_0^\eta S(t) \\
+\lambda^{\eta-1} \. {}^C D_t^\eta C(t) &= f(S, C) - l^\eta C(t) - \delta_0^\eta C(t) \\
+\lambda^{\eta-1} \. {}^C D_t^\eta P(t) &= l^\eta C(t) - (\delta_0^\eta + \delta_1^\eta) P(t)
 \end{aligned}$$
 
 | Parameter | Sociological & Epidemiological Interpretation | Code Variable |
@@ -128,12 +128,12 @@ The models differ in the formulation of the transmission/incidence function $f(S
 
 ```
            Model 1: Bilinear                Model 2: Saturated in S
-           f(S,C) = α^η S C                 f(S,C) = (α^η S C)/(1 + β S)
+           f(S,C) = α^η.S.C                 f(S,C) = (α^η.S.C)/(1 + β.S)
                   │                                        │
                   ├───────────────────┬────────────────────┤
                   ▼                                        ▼
        Model 3: Saturated in C              Model 4: Combined Saturation
-     f(S,C) = (α^η S C)/(1 + γ C)        f(S,C) = (α^η S C)/(1 + β S + γ C)
+     f(S,C) = (α^η.S.C)/(1 + γ.C)        f(S,C) = (α^η.S.C)/(1 + β.S + γ.C)
 ```
 
 #### 1. Model 1: Bilinear (Linear) Transmission
@@ -279,6 +279,12 @@ Unlike purely statistical time-series or standard black-box neural networks, PIN
 ```
 
 ### Network Architecture
+
+<p align="center">
+  <img src="network_architecture.png" alt="Neural network architecture for the Fractional SCP Crime System" width="100%"/>
+</p>
+
+*Figure: Neural network architecture for the PINN applied to the fractional SCP crime system: a 1–64–64–3 fully connected network with input t, two hidden layers of 64 neurons with tanh activation, and three outputs S, C, P with a sigmoid activation (16 of the 64 neurons per hidden layer are drawn for clarity).*
 
 - **Input Layer**: Dimension 1 (normalized time $t \in [0, 1]$).
 - **Hidden Layers**: 2 fully connected hidden layers with 64 units each and $\tanh$ activation.
@@ -523,11 +529,11 @@ If you find this work, codebase, or methodology useful in your research, please 
 
 ## Authors & Acknowledgments
 
-- **Komal Bansal** — *Department of Mathematics, School of Advanced Sciences, VIT-AP University, Amaravati, 522237, India*
-- **Harshit Pranjal** — *Department of Mathematics, Birla Institute of Technology, Mesra, Ranchi, India*
-- **Poonam Yadav** — *Department of Mathematics, Birla Institute of Technology and Science, Pilani, 333031, India*
-- **Trilok Mathur** — *Department of Mathematics, Birla Institute of Technology and Science, Pilani, 333031, India*
-- **Shivi Agarwal** — *Department of Mathematics, Birla Institute of Technology and Science, Pilani, 333031, India*
+- **Prof. Komal Bansal** — *Dept. of Mathematics, School of Advanced Sciences, VIT-AP University, Amaravati, 522237, India*
+- **Harshit Pranjal** — *Dept. of Mathematics, Birla Institute of Technology, Mesra, Ranchi, India*
+- **Poonam Yadav** — *Dept. of Mathematics, Birla Institute of Technology and Science, Pilani, 333031, India*
+- **Prof. Trilok Mathur** — *Dept. of Mathematics, Birla Institute of Technology and Science, Pilani, 333031, India*
+- **Prof. Shivi Agarwal** — *Dept. of Mathematics, Birla Institute of Technology and Science, Pilani, 333031, India*
 
 We gratefully acknowledge the **National Crime Records Bureau (NCRB)**, Ministry of Home Affairs, Government of India, for maintaining the public crime records that facilitated this empirical investigation.
 
