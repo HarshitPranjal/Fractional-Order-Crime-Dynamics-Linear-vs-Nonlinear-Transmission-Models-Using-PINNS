@@ -280,29 +280,11 @@ Unlike purely statistical time-series or standard black-box neural networks, PIN
 
 ### Network Architecture
 
-```
-   INPUT LAYER               HIDDEN LAYER 1                   HIDDEN LAYER 2                  OUTPUT LAYER              ACTIVATED PREDICTIONS
-    (Dim = 1)                 (64 Neurons)                     (64 Neurons)                    (Dim = 3)                   (Sigmoid Bounds)
 <p align="center">
-  <img src="network_architecture.png" alt="Neural Network Architecture for Fractional SCP Crime System" width="100%"/>
+  <img src="network_architecture.png" alt="Neural network architecture for the Fractional SCP Crime System" width="100%"/>
 </p>
 
-                     ┌───► ( Neuron 1 ) ─────────────► ( Neuron 1 ) ─────────────► [ Linear Head z_S ] ───► σ(·) ───► S(t)  (Susceptible Non-criminals)
-                     │
-                     ├───► ( Neuron 2 ) ─────────────► ( Neuron 2 ) ─────────────► [ Linear Head z_C ] ───► σ(·) ───► C(t)  (Criminally Active)
-                     │
-   ┌───────────┐     ├───► ( Neuron 3 ) ─────────────► ( Neuron 3 ) ─────────────► [ Linear Head z_P ] ───► σ(·) ───► P(t)  (Prisoners / Rehabilitated)
-   │  Time (t) │ ────┤           :                                :
-   │  t ∈ [0,1]│     │           :       (Fully Connected)        :
-   └───────────┘     │           :                                :
-                     └───► ( Neuron 64) ─────────────► ( Neuron 64)
-                                 ▲                                ▲                               ▲
-                                 │                                │                               │
-                          Weights: W_1                     Weights: W_2                    Weights: W_3
-                          Biases:  b_1                     Biases:  b_2                    Biases:  b_3
-                          Activation: tanh                 Activation: tanh                Activation: Linear
-```
-*Figure: Neural network architecture for the PINN applied to the fractional SCP crime system: a 1–64–64–3 fully connected network with input $t$, two hidden layers of 64 neurons with tanh activation, and three outputs $S, C, P$ with a sigmoid activation (16 of the 64 neurons per hidden layer are drawn for clarity).*
+*Figure: Neural network architecture for the PINN applied to the fractional SCP crime system: a 1–64–64–3 fully connected network with input t, two hidden layers of 64 neurons with tanh activation, and three outputs S, C, P with a sigmoid activation (16 of the 64 neurons per hidden layer are drawn for clarity).*
 
 - **Input Layer**: Dimension 1 (normalized time $t \in [0, 1]$).
 - **Hidden Layers**: 2 fully connected hidden layers with 64 units each and $\tanh$ activation.
